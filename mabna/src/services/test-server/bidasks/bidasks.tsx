@@ -1,6 +1,16 @@
 import axios from "axios";
 
-export type AssetType = {
+export type OrderType = {
+    order_rank: number,
+    ask_count: number,
+    ask_volume: number,
+    ask_price: number,
+    bid_count: number,
+    bid_volume: number,
+    bid_price: number
+};
+
+export type BidasksType = {
     entity: {
         id: string,
         meta: {
@@ -9,42 +19,49 @@ export type AssetType = {
     },
     type: string,
     value: {
-        title: string,
-        english_title: string,
-        short_title: string,
-        english_short_title: string,
-        trade_symbol: string,
-        english_trade_symbol: string
+        start_date_time: string,
+        end_date_time: string,
+        instrument: {
+            id: string,
+            meta: {
+                type: string
+            }
+        },
+        orders: OrderType[]
     },
     id: string,
     meta: {
         version: number,
         state: string,
         insert_date_time: string,
+        update_date_time: string,
         type: string
     }
-};
+}
 
 type GetAssetResponse = {
-    data: AssetType[];
+    data: BidasksType[];
 };
 
-const getAsset = async (id: string) => {
+const getBidasks = async (ids: string[]) => {
     try {
 
         const { data } = await axios.get<GetAssetResponse>(
-            `http://localhost:3000/assets/${id}`,
+            'http://localhost:3000/bidasks',
             {
                 headers: {
                     Accept: 'application/json',
                 },
+                params: {
+                    asset_id: ids.join(',')
+                }
             },
         );
 
         return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error(`API request error on /assets/${id}`, error.message);
+            console.error('API request error on /asset', error.message);
             return error.message;
         } else {
             console.log('unexpected error: ', error);
@@ -53,4 +70,4 @@ const getAsset = async (id: string) => {
     }
 }
 
-export { getAsset }
+export { getBidasks }

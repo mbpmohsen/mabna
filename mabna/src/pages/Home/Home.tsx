@@ -1,30 +1,25 @@
 import React from 'react';
-import { getAssets, AssetType } from '../../services/test-server';
+import { AssetType } from '../../services/test-server';
 import { Table } from "../../components/Table/Table";
 import {COLUMNS} from "./utils";
-import {flushSync} from "react-dom";
+import {Row} from "./components/Row";
+import {SearchContext} from "../../Contexts/SearchBox/SearchBox";
 
 const Home: React.FC = () => {
-    const [response, saveResponse] = React.useState<AssetType[]>([]),
+    const response = React.useContext<AssetType[]>(SearchContext),
         [tableData, setTableData] = React.useState<AssetType[]>([]);
 
-    console.log("response", response)
-    console.log("tableData", tableData);
-
     function handleSaveResponse(data: AssetType[]) {
-        flushSync(() => {
-            saveResponse(data);
-            if (data.length < 30) {
-                setTableData(data);
-                return;
-            }
-            setTableData(data.slice(0, 30));
+        if (data.length < 30) {
+            setTableData(data);
             return;
-        });
+        }
+        setTableData(data.slice(0, 30));
+        return;
     }
 
     function handleGiveMore() {
-        const tableLength = tableData.length
+        const tableLength = tableData.length;
         if (response.length > tableLength) {
             const spliceData = response.slice(tableLength - 1, tableLength + 30)
             setTableData(data => [...data, ...spliceData]);
@@ -32,14 +27,14 @@ const Home: React.FC = () => {
     }
 
     React.useEffect(() => {
-        getAssets().then((response: any) => {
-            handleSaveResponse(response.data)
-        })
-    }, [])
+        if(response.length) {
+            handleSaveResponse(response)
+        }
+    }, [response])
 
     return (
         <React.Fragment>
-            <Table rows={tableData} columns={COLUMNS} giveMeMore={handleGiveMore}/>
+            <Table rows={tableData} columns={COLUMNS} giveMeMore={handleGiveMore} rowComponent={Row} virtualList/>
         </React.Fragment>
     )
 }
