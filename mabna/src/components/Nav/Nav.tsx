@@ -19,11 +19,11 @@ const Navbar = () => {
     return (
         <React.Fragment>
             <nav className="bg-white border-gray-200 px-2 sm:px-4 py-3 dark:bg-gray-800">
-                <div className="container mx-4 flex justify-between items-between">
-                    <Link to="/" className="flex items-center">
+                <div className="container md:mx-4 flex justify-between items-between">
+                    <Link to="/" className="flex items-center hidden md:block">
                         <span className="self-center text-sm font-semibold whitespace-nowrap dark:text-white">لیست دارایی ها</span>
                     </Link>
-                    <div className="w-full mr-10">
+                    <div className="w-full md:mr-10">
                         <div className="relative">
                             <input type="text" id="search-navbar"
                                    className="block p-2 pr-10 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -39,11 +39,16 @@ const Navbar = () => {
                             {debouncedSearchValue && (
                                 <div className="py-3 text-sm absolute z-20 bg-white shadow w-full top-16 rounded max-h-40 overflow-y-scroll">
                                     {response.filter(item => item?.value?.trade_symbol?.includes(debouncedSearchValue) || item?.value?.title?.includes(debouncedSearchValue)).map(item => (
-                                        <div
-                                            className="flex justify-start cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-100 rounded-md px-2 py-2 my-2">
-                                            <div className="flex-grow font-medium px-2">{item?.value?.trade_symbol}</div>
-                                            <div className="text-sm font-normal text-gray-500 tracking-wide">{item?.value?.title}</div>
-                                        </div>))}
+                                        <Link to={`/asset/${item?.entity?.id}?name=${item?.value?.trade_symbol}`}>
+                                            <div
+                                                className="flex justify-start cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-100 rounded-md px-2 py-2 my-2">
+                                                <div
+                                                    className="flex-grow font-medium px-2">{item?.value?.trade_symbol}</div>
+                                                <div
+                                                    className="text-sm font-normal text-gray-500 tracking-wide">{item?.value?.title}</div>
+                                            </div>
+                                        </Link>
+                                        ))}
                                 </div>)
                             }
 
